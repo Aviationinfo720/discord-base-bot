@@ -95,17 +95,27 @@ MY_GUILD = discord.Object(id=1290614052115976323)
 PUNISHMENT_LOG = 1290913389895221249
 MODERATOR_ROLE_ID = [1290907676288487526, 1290907287682027586, 1290614351870427207]
 MIKU_ID = 1290993538439315507
-warnjson_paths = "C:/Anwesh/Python-Projects/Aviationbot/warnings.json"
+WARNSON_PATH = "H:/My Drive/jjkinfo_jsons/warnings.json"
+DATA_FILE = "H:/My Drive/jjkinfo_jsons/leveling.json"
 
 CHAR = '5mhs-itLvD620IWrWLamTb2_yoj4gnm-o_LTX5LPRNE'
 
 
 chat = None
 
-# # Load token from YAML file
-# path = "C:/Anwesh/Python-Projects/Aviationbot/key.yml"
-# with open(path, 'r') as f:
-#     _TOKEN = yaml.safe_load(f)
+def load_user_data():
+    if os.path.exists(DATA_FILE):
+        with open(DATA_FILE, "r") as f:
+            return json.load(f)
+    return {}
+
+user_data = load_user_data()
+
+# Save user data to the JSON file
+def save_user_data():
+    with open(DATA_FILE, "w") as f:
+        json.dump(user_data, f, indent=4)
+
 ai_token = "9d8e1b7469829fbe9db06dd701ea0a604fc45e30"
 
 class MyClient(discord.Client):
@@ -158,6 +168,19 @@ class MyClient(discord.Client):
         if message.author == self.user:
             return
 
+        user_id = str(message.author.id)
+
+        if user_id not in user_data:
+            user_data[user_id] = {'xp': 0, 'level': 1}
+
+        xp_gained = 10
+        user_data[user_id]['xp'] += xp_gained
+        await self.check_level_up(message.author)
+
+        save_user_data()
+
+        print(f"{message.author} now has {user_data[user_id]['xp']} XP.")
+
         # Only respond to messages in the specified channel
         if message.channel.id == MIKU_ID:
             if self.chat:
@@ -197,14 +220,37 @@ def is_mod(interaction: discord.Interaction):
             return True
     return False
 
+async def check_level_up(self, user: discord.User):
+        user_id = str(user.id)
+        xp = user_data[user_id]['xp']
+        current_level = user_data[user_id]['level']
+        xp_channel = client.get_channel(1293203259397242984)
+
+        # Example leveling formula: 100 XP per level
+        next_level_xp = 100 * current_level
+
+        if xp >= next_level_xp:
+            user_data[user_id]['level'] += 1
+            new_level = user_data[user_id]['level']
+
+            # Notify the user about their level up
+            await xp_channel.send(f"Congratulations! You've leveled up to level {new_level}.")
+            await user.send(f"Congratulations! You've leveled up to level {new_level} in the Anime chats and random.")
+
+            # Optionally give a role when they level up
+            # await self.give_role_for_level(user, new_level)
+
+            # Save the updated level to JSON
+            save_user_data()
+
 def save_warnings(data):
-    with open(warnjson_paths, 'w') as f:
+    with open(WARNSON_PATH, 'w') as f:
         json.dump(data, f, indent=4)
 
 def load_warnings():
     try:
-        if os.path.exists(warnjson_paths):
-            with open(warnjson_paths, 'r') as f:
+        if os.path.exists(WARNSON_PATH):
+            with open(WARNSON_PATH, 'r') as f:
                 return json.load(f)
         return {"users": []}
     except json.JSONDecodeError as e:
@@ -843,7 +889,7 @@ async def get_warns(interaction: discord.Interaction, member: discord.Member):
 @app_commands.check(is_mod)
 async def clearwarnings(interaction: discord.Interaction, member: discord.Member):
     """Clears all warnings of a user"""
-    with open(warnjson_paths, 'r') as f:
+    with open(WARNSON_PATH, 'r') as f:
         user_data = json.load(f)
 
     # Find the user entry
@@ -855,7 +901,7 @@ async def clearwarnings(interaction: discord.Interaction, member: discord.Member
         await interaction.response.send_message(f"No warnings found for {member.mention}.")
 
     # Save updated data to file
-    with open(warnjson_paths, 'w') as f:
+    with open(WARNSON_PATH, 'w') as f:
         json.dump(user_data, f, indent=4)
 
 voiceclint = None
