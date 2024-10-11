@@ -213,14 +213,8 @@ class MyClient(discord.Client):
         if self.character_client:
             await self.character_client.close_session()
         await super().close()
-                
-def is_mod(interaction: discord.Interaction):
-    for role_id in MODERATOR_ROLE_ID:
-        if interaction.user.get_role(role_id) is not None:
-            return True
-    return False
 
-async def check_level_up(self, user: discord.User):
+    async def check_level_up(self, user: discord.User):
         user_id = str(user.id)
         xp = user_data[user_id]['xp']
         current_level = user_data[user_id]['level']
@@ -242,6 +236,14 @@ async def check_level_up(self, user: discord.User):
 
             # Save the updated level to JSON
             save_user_data()
+
+                
+def is_mod(interaction: discord.Interaction):
+    for role_id in MODERATOR_ROLE_ID:
+        if interaction.user.get_role(role_id) is not None:
+            return True
+    return False
+
 
 def save_warnings(data):
     with open(WARNSON_PATH, 'w') as f:
