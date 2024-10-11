@@ -1,0 +1,10 @@
+characterai==1.0.0
+characterai==1.0.1
+discord.py==2.4.0
+PyCharacterAI==2.2.0
+PyCharacterAI==1.1.0
+spotifysearch==0.0.5
+spotipy==2.24.0
+websockets==10.4
+websockets==13.1
+yt_dlp==2024.9.27
