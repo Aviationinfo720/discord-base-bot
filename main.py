@@ -164,9 +164,10 @@ class MyClient(discord.Client):
             logging.error(f"Error initializing Character AI session: {e}")
 
     async def on_message(self, message: discord.Message):
-        # Ignore the bot's own messages
-        if message.author == self.user:
-            return
+        bot_role = discord.utils.get(message.guild.roles, name="bots")
+        # Ignore the people under the 'bots' role
+        if bot_role in message.author.roles:
+            pass
 
         user_id = str(message.author.id)
 
@@ -583,6 +584,7 @@ async def leaderboard(interaction: discord.Interaction):
         user = await client.fetch_user(int(user_id))
         leaderboard.add_field(name=f"`{user.name}`", value=f"Level `{data['level']}` (`{data['xp']}` XP)", inline = False)
     
+    leaderboard.set_footer(text=f"Requested by {interaction.user.name}", icon_url=interaction.user.avatar.url)
 
     await interaction.response.send_message(embed=leaderboard)
 
