@@ -587,6 +587,20 @@ async def level(interaction: discord.Interaction):
         level = user_data[user_id]['level']
         await interaction.response.send_message(f"You are currently level {level} with {xp} XP.")
 
+@client.tree.command(name="leaderboard")
+async def leaderboard(interaction: discord.Interaction):
+    """Displays the top 5 users with the most XP"""
+    sorted_users = sorted(user_data.items(), key=lambda x: x[1]['xp'], reverse=True)
+    
+    leaderboard_str = "🏆 **Leaderboard** 🏆\n\n"
+    for i, (user_id, data) in enumerate(sorted_users[:5], 1):
+        user = await client.fetch_user(int(user_id))
+        leaderboard_str += f"{i}. {user.name} - Level {data['level']} ({data['xp']} XP)\n"
+
+    await interaction.response.send_message(leaderboard_str)
+
+
+
 # @client.tree.command()
 # async def setuprules(interaction: discord.Interaction, channel: discord.TextChannel):
 #     embed = discord.Embed(
