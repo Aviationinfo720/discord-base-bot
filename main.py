@@ -576,6 +576,17 @@ async def roll_dice(interaction: discord.Interaction):
     roll = random.randint(1,6)
     await interaction.response.send_message(f'The number is {roll}')
 
+@client.tree.command(name="level")
+async def level(interaction: discord.Interaction):
+    """Displays your current level and XP"""
+    user_id = str(interaction.user.id)
+    if user_id not in user_data:
+        await interaction.response.send_message("You haven't earned any XP yet!", ephemeral=True)
+    else:
+        xp = user_data[user_id]['xp']
+        level = user_data[user_id]['level']
+        await interaction.response.send_message(f"You are currently level {level} with {xp} XP.")
+
 # @client.tree.command()
 # async def setuprules(interaction: discord.Interaction, channel: discord.TextChannel):
 #     embed = discord.Embed(
