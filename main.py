@@ -228,7 +228,7 @@ class MyClient(discord.Client):
             new_level = user_data[user_id]['level']
 
             # Notify the user about their level up
-            await xp_channel.send(f"Congratulations! You've leveled up to level {new_level}.")
+            await xp_channel.send(f"Congratulations {user.mention}! You've leveled up to level {new_level}.")
             await user.send(f"Congratulations! You've leveled up to level {new_level} in the Anime chats and random.")
 
             # Optionally give a role when they level up
