@@ -34,26 +34,28 @@ import spotipy
 from discord.ui import View, Button
 from spotipy.oauth2 import SpotifyOAuth
 
-
+with open("H:/My Drive/jjkinfo_jsons/keys.json", "r") as f:
+    keys = json.load(f)
 
 tracemalloc.start()
 
 # Elements per page
-cai = pycai(token="9d8e1b7469829fbe9db06dd701ea0a604fc45e30")
+cai = pycai(token=keys["api_keys"]['characterai']['token'])
 L = 5
 music_queue = []  # Music queue
 current_song = None
 busy = False  # Add a busy flag to track if the bot is busy
 
+SPOTIFY_CLIENT_ID = keys["api_keys"]['spotify']['client_id']
+SPOTIFY_CLIENT_SECRET = keys["api_keys"]['spotify']['client_secret']
+
 spotifyclient = Client(
-    client_id="effd6099f3124090b83aaeef730e824a",
-    client_secret="ad655f55959345a9afa9004a4902fc15"
+    client_id = SPOTIFY_CLIENT_ID,
+    client_secret = SPOTIFY_CLIENT_SECRET
     # redirect_uri="https://docs.google.com/forms/d/e/1FAIpQLSchYnSa-HW9FDvv0Ctsybj3UhDw0zGonxby5WuJ8FTjt3_BTQ/viewform?usp=sf_link",  # Set to "http://localhost:8080" for local development
     # scope="user-library-read"  # Adjust the scope as needed
 )
 
-SPOTIFY_CLIENT_ID = 'effd6099f3124090b83aaeef730e824a'
-SPOTIFY_CLIENT_SECRET = 'ad655f55959345a9afa9004a4902fc15'
 
 auth_manager = SpotifyClientCredentials(client_id=SPOTIFY_CLIENT_ID, client_secret=SPOTIFY_CLIENT_SECRET)
 sp = spotipy.Spotify(auth_manager=auth_manager)
@@ -81,21 +83,21 @@ ffmpeg_options = {
 ytdl = youtube_dl.YoutubeDL(ytdl_format_options)
 
 
-MY_GUILD = discord.Object(id=1290614052115976323)
-PUNISHMENT_LOG = 1290913389895221249
-MODERATOR_ROLE_ID = [1290907676288487526, 1290907287682027586, 1290614351870427207]
-MIKU_ID = 1290993538439315507
-WARNSON_PATH = "H:/My Drive/jjkinfo_jsons/warnings.json"
-DATA_FILE = "H:/My Drive/jjkinfo_jsons/leveling.json"
+MY_GUILD = discord.Object(id=keys["discord_ids"]["guild_id"])
+PUNISHMENT_LOG = keys["discord_ids"]["punishment_log"]
+MODERATOR_ROLE_ID = keys['discord_ids']["moderator_role_id"]
+CHARACTER_CHANNEL_ID = keys['discord_ids']["character_channel_id"]
+WARNSON_PATH = keys["file_paths"]["warnson_path"]
+LEVELING_PATH = keys['file_paths']["leveling_path"]
 
-CHAR = '5mhs-itLvD620IWrWLamTb2_yoj4gnm-o_LTX5LPRNE'
-
+CHAR = keys["api_keys"]["characterai"]["char"]
+ai_token = keys["api_keys"]["characterai"]["token"]
 
 chat = None
 
 def load_user_data():
-    if os.path.exists(DATA_FILE):
-        with open(DATA_FILE, "r") as f:
+    if os.path.exists(LEVELING_PATH):
+        with open(LEVELING_PATH, "r") as f:
             return json.load(f)
     return {}
 
@@ -103,10 +105,8 @@ user_data = load_user_data()
 
 # Save user data to the JSON file
 def save_user_data():
-    with open(DATA_FILE, "w") as f:
+    with open(LEVELING_PATH, "w") as f:
         json.dump(user_data, f, indent=4)
-
-ai_token = "9d8e1b7469829fbe9db06dd701ea0a604fc45e30"
 
 class MyClient(discord.Client):
     def __init__(self, *, intents: discord.Intents):
@@ -125,10 +125,10 @@ class MyClient(discord.Client):
         print(f"Synced {len(synced)} commands")
 
         # Get the Discord channel where the bot will listen for messages
-        self.chat_channel = self.get_channel(MIKU_ID)
+        self.chat_channel = self.get_channel(CHARACTER_CHANNEL_ID)
 
         if self.chat_channel is None:
-            logging.error(f"Channel with ID {MIKU_ID} not found.")
+            logging.error(f"Channel with ID {CHARACTER_CHANNEL_ID} not found.")
             return
 
         logging.info(f"Bot is ready and will send messages to {self.chat_channel.name}.")
@@ -173,7 +173,7 @@ class MyClient(discord.Client):
         print(f"{message.author} now has {user_data[user_id]['xp']} XP.")
 
         # Only respond to messages in the specified channel
-        if message.channel.id == MIKU_ID:
+        if message.channel.id == CHARACTER_CHANNEL_ID:
             if self.chat:
                 try:
                     # Send the user's message to Character AI and receive the reply
@@ -1158,7 +1158,7 @@ async def report_message(interaction: discord.Interaction, message: discord.Mess
     )
 
     # Handle report by sending it into a log channel
-    log_channel = interaction.guild.get_channel(1290913389895221249)  # replace with your channel id
+    log_channel = interaction.guild.get_channel(PUNISHMENT_LOG)  # replace with your channel id
 
     embed = discord.Embed(title='Reported Message')
     if message.content:
@@ -1183,4 +1183,4 @@ async def banappeal(interaction: discord.Interaction):
     """Request a ban appeal"""
     await interaction.response.send_modal(BanAppeal())
 
-asyncio.run(client.run("MTI5NDI1MjUwODUwMzQ3ODMxNA.GhQaxI.T8xV-ScDRZjWoY4qcZSnIPnfcd-ZQpxhpK98VA"))
+asyncio.run(client.run(keys["bot_token"]))
