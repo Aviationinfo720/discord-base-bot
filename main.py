@@ -34,7 +34,7 @@ import spotipy
 from discord.ui import View, Button
 from spotipy.oauth2 import SpotifyOAuth
 
-with open("H:/My Drive/jjkinfo_jsons/keys.json", "r") as f:
+with open("PATH/TO/KEYS", "r") as f:
     keys = json.load(f)
 
 tracemalloc.start()
