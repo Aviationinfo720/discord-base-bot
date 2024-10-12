@@ -556,20 +556,6 @@ def generate_unix_time_code():
     return int(time.time())
 
 
-# @client.event
-# async def on_member_join(member):
-
-#     embed = discord.Embed(title=f"Hello there {member.nick}")
-
-#     channel = client.get_channel(1267058564971630728)
-#     if channel:
-    
-
-# @client.listen('on_message')
-# async def on_message(message):
-#     if message.channel.id == MIKU_ID and not message.author.bot:
-#         print(f'Message from {message.author}: {message.content}')
-
 @client.tree.command(name="roll")
 async def roll_dice(interaction: discord.Interaction):
     """Rolls dice 6 sided"""
@@ -592,31 +578,13 @@ async def leaderboard(interaction: discord.Interaction):
     """Displays the top 5 users with the most XP"""
     sorted_users = sorted(user_data.items(), key=lambda x: x[1]['xp'], reverse=True)
     
-    leaderboard_str = "🏆 **Leaderboard** 🏆\n\n"
+    leaderboard = Embed(title="🏆 **Leaderboard** 🏆", colour=discord.Colour.yellow())
     for i, (user_id, data) in enumerate(sorted_users[:5], 1):
         user = await client.fetch_user(int(user_id))
-        leaderboard_str += f"{i}. {user.name} - Level {data['level']} ({data['xp']} XP)\n"
+        leaderboard.add_field(name=f"`{user.name}`", value=f"Level `{data['level']}` (`{data['xp']}` XP)", inline = False)
+    
 
-    await interaction.response.send_message(leaderboard_str)
-
-
-
-# @client.tree.command()
-# async def setuprules(interaction: discord.Interaction, channel: discord.TextChannel):
-#     embed = discord.Embed(
-#         title="🚨Rules🚨",
-#         description="Yes, rules are boring and following it is as crap as eating your poop. But to make a good server, we need to add some rules to maintain equibrilim amongst all!",
-#         # colour=
-#     )
-
-#     embed.add_field(name="**1. Stay SFW (No gore or 18+ Adultery Content)**", value=1, inline=True)
-#     embed.add_field(name="**2. Mild Swearing is allowed but not in a way to hurt others in a bad way**", value=2, inline=True)
-#     embed.add_field(name="**3. Respect every member and their opinions. Yes the pineaple on pizza fights can continue but keep it on a maintainable level**", value=3, inline=True)    
-#     embed.add_field(name="**4. Have fun!**", value=4, inline=True)
-#     embed.set_image(url="https://cdn.discordapp.com/attachments/1267071262669275226/1267085526595272756/RULES.png?ex=66a780da&is=66a62f5a&hm=d72632e08e8004c6a5e60091b1853f495a38f1de32609fe6b421dcc785a2bd56&")
-
-#     await channel.send(embed=embed)
-#     await interaction.response.send_message(content="done", ephemeral=True)
+    await interaction.response.send_message(embed=leaderboard)
 
 @client.tree.command()
 async def show_warnings(interaction: discord.Interaction, member: discord.Member):
@@ -1159,46 +1127,6 @@ async def remove_song(interaction: discord.Interaction, index: int):
         await interaction.response.send_message(f"Removed {track_name} by {artist_names} from the queue", ephemeral=True)
     else:
         await interaction.response.send_message(f"No song found at position {index}", ephemeral=True)
-
-# @tasks.loop(seconds=1)
-# async def update_duration(message: discord.Message, player: YTDLSource):
-#     current_time = 0
-
-#     while player.is_playing():
-#         formatted_time = time.strftime('%M:%S', time.gmtime(current_time))
-#         embed = message.embeds[0]
-#         embed.set_field_at(1, name="Duration", value=formatted_time, inline=True)
-#         await message.edit(embed=embed)
-
-#         current_time += 1
-#         await asyncio.sleep(1)
-
-#     # Remove the buttons once the song is finished
-#     await message.edit(view=None)
-    
-# start_time = time.time()  # Store the start time when playback begins
-
-# @tasks.loop(seconds=10)
-# async def update_duration(interaction: discord.Interaction):
-#     if interaction.guild.voice_client and interaction.guild.voice_client.is_playing():
-#         current_position = interaction.guild.voice_client.source._position  # Adjust as per your source
-#         current_time = time.strftime('%M:%S', time.gmtime(current_position))
-        
-#         # Check if there's an embed in the last message
-#         if interaction.message.embeds:
-#             embed = interaction.message.embeds[0]
-#             embed.set_field_at(1, name="Duration", value=current_time, inline=True)
-#             await interaction.edit_original_message(embed=embed)
-#         else:
-#             # If no embed found, create a new one and send it
-#             embed = discord.Embed(title="Now Playing", color=discord.Color.blue())
-#             embed.add_field(name="Duration", value=current_time, inline=True)
-#             await interaction.edit_original_message(embed=embed)
-
-# @update_duration.before_loop
-# async def before_update_duration():
-#     await client.wait_until_ready()
-
 
 @client.tree.command(name='volume', description='Adjust the volume of the audio (1-100)')
 @app_commands.describe(vol='Volume level (1-100)')
