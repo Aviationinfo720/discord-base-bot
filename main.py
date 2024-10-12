@@ -165,9 +165,9 @@ class MyClient(discord.Client):
 
     async def on_message(self, message: discord.Message):
         bot_role = discord.utils.get(message.guild.roles, name="bots")
-        # Ignore the people under the 'bots' role
+        # Ignore the bot's own messages
         if bot_role in message.author.roles:
-            pass
+            return
 
         user_id = str(message.author.id)
 
