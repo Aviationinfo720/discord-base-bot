@@ -57,15 +57,6 @@ SPOTIFY_CLIENT_SECRET = 'ad655f55959345a9afa9004a4902fc15'
 
 auth_manager = SpotifyClientCredentials(client_id=SPOTIFY_CLIENT_ID, client_secret=SPOTIFY_CLIENT_SECRET)
 sp = spotipy.Spotify(auth_manager=auth_manager)
-# Paths to images
-image_paths = {
-    "lufthansa": "C:/Anwesh/Python-Projects/Aviationbot/lufthansa.jpeg",
-    "british": "C:/Anwesh/Python-Projects/Aviationbot/British_Airlines.jpeg",
-    "airchina": "C:/Anwesh/Python-Projects/Aviationbot/Air_China.jpeg",
-    "airindia": "C:/Anwesh/Python-Projects/Aviationbot/Air_India.jpeg",
-    "singapore": "C:/Anwesh/Python-Projects/Aviationbot/Singapore_Airlines.jpeg",
-}
-
 # yt-dlp options
 
 ytdl_format_options = {
@@ -89,7 +80,6 @@ ffmpeg_options = {
 
 ytdl = youtube_dl.YoutubeDL(ytdl_format_options)
 
-sevenfortysevenpics = [discord.File(open(image_paths[key], "rb")) for key in image_paths]
 
 MY_GUILD = discord.Object(id=1290614052115976323)
 PUNISHMENT_LOG = 1290913389895221249
