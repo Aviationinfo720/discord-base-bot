@@ -1,0 +1,25 @@
+{
+    "bot_token": "BOT_TOEKN",
+    "api_keys": {
+      "spotify": {
+        "client_id": "CLIENT_ID",
+        "client_secret": "CLIENT_SECRET"
+      },
+      "characterai":{
+        "token": "TOEKN",
+        "char": "CHARACTER_ID"
+      }
+    },
+    "discord_ids": {
+        "creator_id": "YOUT_DISCORD_ID",
+        "punishment_log": "DISCORD_PUNISHMENT_LOG_CHANNEL",
+        "moderator_role_id": ["ROLE1", "ROLE2", "ROLE3"],
+        "character_channel_id": "CHARACTER_CHANNEL_ID",
+        "guild_id": "GUILD_ID"
+    },
+    "file_paths": {
+        "warnson_path": "PATH/TO/WARNINGS.JSON",
+        "leveling_path": "PATH/TO/LEVELING.JSON"
+    }
+  }
+  
