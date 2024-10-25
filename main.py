@@ -34,7 +34,7 @@ import spotipy
 from discord.ui import View, Button
 from spotipy.oauth2 import SpotifyOAuth
 
-with open("PATH/TO/KEYS", "r") as f:
+with open("H:/My Drive/jjkinfo_jsons/keys.json", "r") as f:
     keys = json.load(f)
 
 tracemalloc.start()
@@ -43,6 +43,8 @@ tracemalloc.start()
 cai = pycai(token=keys["api_keys"]['characterai']['token'])
 L = 5
 music_queue = []  # Music queue
+voice_session_start = {}
+voice_xp_data = {}
 current_song = None
 busy = False  # Add a busy flag to track if the bot is busy
 
@@ -89,6 +91,7 @@ MODERATOR_ROLE_ID = keys['discord_ids']["moderator_role_id"]
 CHARACTER_CHANNEL_ID = keys['discord_ids']["character_channel_id"]
 WARNSON_PATH = keys["file_paths"]["warnson_path"]
 LEVELING_PATH = keys['file_paths']["leveling_path"]
+XP_FILE_PATH = keys['file_paths']["xp_file_path"]
 
 CHAR = keys["api_keys"]["characterai"]["char"]
 ai_token = keys["api_keys"]["characterai"]["token"]
@@ -107,6 +110,20 @@ user_data = load_user_data()
 def save_user_data():
     with open(LEVELING_PATH, "w") as f:
         json.dump(user_data, f, indent=4)
+
+def load_xp_data():
+    global voice_xp_data
+    if os.path.exists(XP_FILE_PATH):
+        with open(XP_FILE_PATH, 'r') as f:
+            voice_xp_data = json.load(f)
+    else:
+        voice_xp_data = {}
+
+def save_xp_data():
+    with open(XP_FILE_PATH, 'w') as f:
+        json.dump(voice_xp_data, f, indent=4)
+
+load_xp_data()
 
 class MyClient(discord.Client):
     def __init__(self, *, intents: discord.Intents):
@@ -228,6 +245,53 @@ class MyClient(discord.Client):
             # Save the updated level to JSON
             save_user_data()
 
+    async def on_voice_state_update(self, member, before, after):
+        # Check if user joins a voice channel
+        if before.channel is None and after.channel is not None:
+            # User joined a voice channel
+            voice_session_start[member.id] = datetime.time
+            print(f"{member.name} joined a voice channel.")
+
+        # Check if user leaves a voice channel
+        elif before.channel is not None and after.channel is None:
+            # User left a voice channel
+            if member.id in voice_session_start:
+                join_time = voice_session_start.pop(member.id)  # Get the join time and remove from the dict
+                duration = (datetime.time - join_time).total_seconds()  # Calculate time in voice channel
+                
+                # Assign XP based on duration (e.g., 1 XP per minute)
+                xp_earned = int(duration // 60)  # 1 XP per minute spent
+                
+                if member.id in voice_xp_data:
+                    voice_xp_data[member.id] += xp_earned
+                else:
+                    voice_xp_data[member.id] = xp_earned
+
+                print(f"{member.name} left the voice channel. Earned {xp_earned} XP.")
+
+                # Save XP data to JSON
+                save_xp_data()
+
+        # Check if user switches voice channels
+        elif before.channel is not None and after.channel is not None and before.channel != after.channel:
+            # Treat this as the user switching channels
+            if member.id in voice_session_start:
+                join_time = voice_session_start.pop(member.id)
+                duration = (datetime.time - join_time).total_seconds()
+                
+                xp_earned = int(duration // 60)  # 1 XP per minute spent
+                
+                if member.id in voice_xp_data:
+                    voice_xp_data[member.id] += xp_earned
+                else:
+                    voice_xp_data[member.id] = xp_earned
+
+                print(f"{member.name} switched voice channels. Earned {xp_earned} XP.")
+                # Start a new session for the new channel
+                voice_session_start[member.id] = datetime.now()
+
+                # Save XP data to JSON
+                save_xp_data()
                 
 def is_mod(interaction: discord.Interaction):
     for role_id in MODERATOR_ROLE_ID:
@@ -567,16 +631,48 @@ async def level(interaction: discord.Interaction):
 @client.tree.command(name="leaderboard")
 async def leaderboard(interaction: discord.Interaction):
     """Displays the top 5 users with the most XP"""
-    sorted_users = sorted(user_data.items(), key=lambda x: x[1]['xp'], reverse=True)
     
-    leaderboard = Embed(title="🏆 **Leaderboard** 🏆", colour=discord.Colour.yellow())
-    for i, (user_id, data) in enumerate(sorted_users[:5], 1):
+    # Sort users by text XP
+    sorted_text_users = sorted(user_data.items(), key=lambda x: x[1]['xp'], reverse=True)
+    
+    # Sort users by voice XP
+    sorted_voice_users = sorted(voice_xp_data.items(), key=lambda x: x[1], reverse=True)
+    
+    # Create the embed for the leaderboard
+    leaderboard = discord.Embed(
+        title="🏆 **Guild Score Leaderboard** 🏆", 
+        colour=discord.Colour.gold()
+    )
+    
+    # Format the top 5 users' text XP
+    text_leaderboard = ""
+    for i, (user_id, data) in enumerate(sorted_text_users[:5], 1):
         user = await client.fetch_user(int(user_id))
-        leaderboard.add_field(name=f"`{user.name}`", value=f"Level `{data['level']}` (`{data['xp']}` XP)", inline = False)
+        text_leaderboard += f"**#{i} {user.mention}**: `{data['xp']}` XP\n"
     
+    # Add text leaderboard as one field
+    leaderboard.add_field(name="**Top 4 Text** 💬", value=text_leaderboard or "No Data", inline=True)
+
+    # Format the top 5 users' voice XP
+    voice_leaderboard = ""
+    for i, (user_id, xp) in enumerate(sorted_voice_users[:5], 1):
+        user = await client.fetch_user(int(user_id))
+        voice_leaderboard += f"**#{i} {user.mention}**: `{xp}` XP\n"
+
+    # Add voice leaderboard as one field
+    leaderboard.add_field(name="**Top 4 Voice** 🎤", value=voice_leaderboard or "No Data", inline=True)
+
     leaderboard.set_footer(text=f"Requested by {interaction.user.name}", icon_url=interaction.user.avatar.url)
 
     await interaction.response.send_message(embed=leaderboard)
+
+
+@client.tree.command(name="voicexp")
+async def voicexp(interaction: discord.Interaction, member: discord.Member = None):
+    """Displays the voice XP of a user"""
+    member = member or interaction.user
+    xp = voice_xp_data.get(str(member.id), 0)
+    await interaction.response.send_message(f"**{member.display_name}** has **{xp}** voice XP.")
 
 @client.tree.command()
 async def show_warnings(interaction: discord.Interaction, member: discord.Member):
