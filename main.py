@@ -16,6 +16,7 @@ import websockets
 from spotipy import Spotify
 from characterai import aiocai
 from characterai import pycai
+import python_weather
 import functools 
 from spotipy.oauth2 import SpotifyClientCredentials
 # import easy_pil
@@ -34,7 +35,7 @@ import spotipy
 from discord.ui import View, Button
 from spotipy.oauth2 import SpotifyOAuth
 
-with open("H:/My Drive/jjkinfo_jsons/keys.json", "r") as f:
+with open("PATH/TO/KEYS", "r") as f:
     keys = json.load(f)
 
 tracemalloc.start()
@@ -610,6 +611,18 @@ client = MyClient(intents=intents)
 def generate_unix_time_code():
     return int(time.time())
 
+@client.tree.command()
+async def get_weather(interaction: discord.Interaction, location: str) -> None:
+    async with python_weather.Client(unit=python_weather.METRIC) as weather_client:
+        # Get the weather for the specified location
+        weather = await weather_client.get(location)
+        embed = Embed(title=f"Weather for {location}, {weather.country}.", color=discord.Colour.from_rgb(r=117, g=204, b=255))
+        embed.description = f"""Location: **{weather.location}**
+                            Temperature: **{weather.temperature}°C**
+                            Weather Condition: **{weather.description}**"""
+        embed.set_footer(text=f"Requested by {interaction.user.name}", icon_url=interaction.user.avatar.url)
+
+        await interaction.response.send_message(embed=embed)
 
 @client.tree.command(name="roll")
 async def roll_dice(interaction: discord.Interaction):
