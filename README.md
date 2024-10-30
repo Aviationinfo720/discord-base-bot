@@ -2,8 +2,6 @@
 
 **READ BEFORE USING**
 
-*--------------------------------------------------------------UPDATE 2.0.1----------------------------------------------------------------------------*
-
 Thankyou for using my bot base code, Under here is all of the pips you have to do:
 
 **discord:**
@@ -28,11 +26,14 @@ Thankyou for using my bot base code, Under here is all of the pips you have to d
 `pip install characterai`
 
 **PyCharacterAI:**
-`pip install git+https://github.com/Xtr4F/PyCharacterAI` <- adding git+[github_respitory_url] allows you to clone the respitory to your computer
+`pip install git+https://github.com/Xtr4F/PyCharacterAI` <- adding git+[github_respitory_url] allows you to clone the respitory to your filesystem
 
-*--------------------------------------------------------------UPDATE 2.0.2----------------------------------------------------------------------------*
+**python_weather:**
+`pip install python-weather`
 
-This was a **big** update and thus alot of libraries were imported, The most importand one and the hardest one being ffmpeg. Heres a whole guidethrough on how to download ffmpeg.
+*FFmpeg instalation*
+
+This is a **big** prt of the code and thus alot of libraries were imported, The most importand one and the hardest one being ffmpeg. Heres a whole guidethrough on how to download ffmpeg.
 
 ffmpeg is actually a external library which is not fully uploded in pyPI, so doing `pip install ffmpeg` would work but it just interacts with the ffmpg which you download onto your computer manually.
 
