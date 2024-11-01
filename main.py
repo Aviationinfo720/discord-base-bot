@@ -35,7 +35,7 @@ import spotipy
 from discord.ui import View, Button
 from spotipy.oauth2 import SpotifyOAuth
 
-with open("PATH/TO/KEYS.JSON", "r") as f:
+with open("H:/My Drive/jjkinfo_jsons/keys.json", "r") as f:
     keys = json.load(f)
 
 tracemalloc.start()
@@ -829,7 +829,6 @@ async def myspotify(interaction: discord.Interaction, member: Optional[discord.M
 async def searchspotifysongs(interaction: discord.Interaction, input: str):
     """Search your favourite songs"""
 
-    currentchannel = client.get_channel(interaction.MIKU_id)
 
     track_name = input
     search_results = spotifyclient.search(track_name).get_tracks()
