@@ -624,6 +624,37 @@ async def get_weather(interaction: discord.Interaction, location: str) -> None:
 
         await interaction.response.send_message(embed=embed)
 
+@client.tree.command(name="gamble")
+async def gamble(interaction:discord.Interaction, ammount:str):
+    """Go Gambling!"""
+
+    ammount_parsed = []
+
+    for character in ammount:
+        if character == "$":
+            pass
+        else:
+            ammount_parsed.append(character)
+
+    final_ammount = ""
+
+    for character in ammount_parsed:
+        final_ammount += character
+
+    gamble_set = ["1x", "1x", "1x", "No Return", "No Return", "No Return", "No Return", "No Return", "2x", "2x", "5x"]
+    gamble_result = gamble_set[random.randint(0, len(gamble_set) - 1)]
+
+    if gamble_result == "1x":
+        await interaction.response.send_message(f"You got {final_ammount} back!")
+    elif gamble_result == "2x":
+        await interaction.response.send_message(f"You Won 2x money! You got {int(final_ammount)*2}!")
+    elif gamble_result == "5x":
+        await interaction.response.send_message(f"You Won 5x money! You got {int(final_ammount)*5}!")
+    elif gamble_result == "No Return":
+        await interaction.response.send_message(f"You lost all your money!")
+    else:
+        await interaction.response.send_message(f"An error occured on our side, we are sorry.")
+
 @client.tree.command(name="roll")
 async def roll_dice(interaction: discord.Interaction):
     """Rolls dice 6 sided"""
