@@ -8,9 +8,8 @@ from discord.ext import commands
 import yt_dlp as youtube_dl
 import websockets.exceptions
 from typing import Optional
-from typing import Callable, Optional
+from typing import Callable
 from discord import app_commands
-# import yaml
 import datetime
 import websockets
 from spotipy import Spotify
@@ -19,12 +18,11 @@ from characterai import pycai
 import python_weather
 import functools 
 from spotipy.oauth2 import SpotifyClientCredentials
-# import easy_pil
 import sqlite3
 import asyncio
 from PyCharacterAI import get_client
 from PyCharacterAI.exceptions import SessionClosedError
-from datetime import timedelta
+from datetime import timedelta, datetime, date
 import logging
 import json 
 from spotifysearch.client import Client
@@ -91,6 +89,7 @@ PUNISHMENT_LOG = keys["discord_ids"]["punishment_log"]
 MODERATOR_ROLE_ID = keys['discord_ids']["moderator_role_id"]
 CHARACTER_CHANNEL_ID = keys['discord_ids']["character_channel_id"]
 WARNSON_PATH = keys["file_paths"]["warnson_path"]
+ECONOMY_PATH = keys["file_paths"]["economy_json"]
 LEVELING_PATH = keys['file_paths']["leveling_path"]
 XP_FILE_PATH = keys['file_paths']["xp_file_path"]
 
@@ -98,6 +97,18 @@ CHAR = keys["api_keys"]["characterai"]["char"]
 ai_token = keys["api_keys"]["characterai"]["token"]
 
 chat = None
+
+def load_economy_data():
+    if os.path.exists(ECONOMY_PATH):
+        with open(ECONOMY_PATH, "r") as f:
+            return json.load(f)
+    return {}
+
+economy_data = load_economy_data()
+
+def save_economy_data():
+    with open(ECONOMY_PATH, "w") as f:
+        return json.dump(economy_data, f, indent=4)
 
 def load_user_data():
     if os.path.exists(LEVELING_PATH):
@@ -624,9 +635,242 @@ async def get_weather(interaction: discord.Interaction, location: str) -> None:
 
         await interaction.response.send_message(embed=embed)
 
+
+
+@client.tree.command()
+@app_commands.choices(jobs = [
+    app_commands.Choice(name="Virtual Architect (1000₿)", value=1),
+    app_commands.Choice(name="Cybersecurity Specialist (900₿)", value=2),
+    app_commands.Choice(name="AI Trainer (450₿)", value=3),
+    app_commands.Choice(name="Digital Curator (600₿)", value=4),
+    app_commands.Choice(name="Quantum Engineer (1400₿)", value=5),
+    app_commands.Choice(name="Metaverse Guide (250₿)", value=6),
+    app_commands.Choice(name="Data Miner (500₿)", value=7),
+    app_commands.Choice(name="Avatar Stylist (200₿)", value=8),
+    app_commands.Choice(name="Virtual Lawyer (700₿)", value=9),
+    app_commands.Choice(name="Robot Mechanic (800₿)", value=10),
+    app_commands.Choice(name="Digital Healer (300₿)", value=11),
+    app_commands.Choice(name="Energy Harvester (320₿)", value=12),
+    app_commands.Choice(name="VR Pilot (750₿)", value=13),
+    app_commands.Choice(name="Hacker-For-Hire (600₿)", value=14),
+    app_commands.Choice(name="Tech Farmer (300₿)", value=15),
+    app_commands.Choice(name="Memory Broker (800₿)", value=16),
+    app_commands.Choice(name="Virtual Reality Chef (400₿)", value=17)
+
+])
+async def job_info(interaction: discord.Interaction, jobs: app_commands.Choice[int]):
+    """See jobs which you could get in the metaverse!"""
+    if jobs.value == 1:
+        await interaction.response.send_message("**Virtual Architec (1000₿)** - Designs and builds structures or spaces in the metaverse.")
+    elif jobs.value == 2:
+        await interaction.response.send_message("**Cybersecurity Specialist (900₿)** - Protects virtual environments from hacks or glitches.")
+    elif jobs.value == 3:
+        await interaction.response.send_message("**AI Trainer (450₿)** - Works with AI characters, teaching them specific tasks or improving their behaviors.")
+    elif jobs.value == 4:
+        await interaction.response.send_message("**Digital Curator (600₿)** - Collects and showcases digital artifacts, rare NFTs, or metaverse memorabilia.")
+    elif jobs.value == 5:
+        await interaction.response.send_message("**Quantum Engineer (1400₿)** - Develops futuristic tech, like quantum processors or teleportation hubs.")
+    elif jobs.value == 6:
+        await interaction.response.send_message("**Metaverse Guide (250₿)** - Helps new players navigate the metaverse, acting as a guide for various virtual worlds.")
+    elif jobs.value == 7:
+        await interaction.response.send_message("**Data Miner (500₿)** - Gathers and analyzes valuable in-game data or resources.")
+    elif jobs.value == 7:
+        await interaction.response.send_message("**Avatar Stylist (200₿)** - Creates custom avatars or outfits with unique traits.")
+    elif jobs.value == 8:
+        await interaction.response.send_message("**Virtual Lawyer (700₿)** - Specializes in resolving digital disputes, handling metaverse law and order.")
+    elif jobs.value == 9:
+        await interaction.response.send_message("**Robot Mechanic (200₿)** - Repairs, upgrades, or even hacks robots used by players.")
+    elif jobs.value == 10:
+        await interaction.response.send_message('**Digital Healer (700₿)** - Cures or repairs "virtual injuries" players get from battles, glitches, or other encounters.')
+    elif jobs.value == 11:
+        await interaction.response.send_message("**Energy Harvester (320₿)** - Gathers futuristic energy sources like nanobots, virtual power, or solar surges.")
+    elif jobs.value == 12:
+        await interaction.response.send_message("**VR Pilot (750₿)** - Pilots virtual ships, cars, or drones for races or missions.")
+    elif jobs.value == 13:
+        await interaction.response.send_message('**Hacker-for-Hire (600₿)** - Specializes in “ethical” or “underground” hacking missions.')
+    elif jobs.value == 14:
+        await interaction.response.send_message("**Tech Farmer (300₿)** - Grows and harvests rare digital plants or virtual resources in the metaverse.")
+    elif jobs.value == 15:
+        await interaction.response.send_message("**Memory Broker (800₿)** - Specializes in buying, selling, or trading digital memories and experiences. They work with rare or high-demand memories that players want to access, relive, or keep private.")
+    elif jobs.value == 16:
+        await interaction.response.send_message("**Virtual Reality Chef (400₿)** - Prepares digital “meals” that give temporary buffs, enhance user experiences, or provide health in the virtual world. Players can purchase these meals for extra in-game benefits or unique experiences.")
+
+@client.tree.command()
+@app_commands.choices(jobs = [
+    app_commands.Choice(name="Virtual Architect (1000₿)", value=1),
+    app_commands.Choice(name="Cybersecurity Specialist (900₿)", value=2),
+    app_commands.Choice(name="AI Trainer (450₿)", value=3),
+    app_commands.Choice(name="Digital Curator (600₿)", value=4),
+    app_commands.Choice(name="Quantum Engineer (1400₿)", value=5),
+    app_commands.Choice(name="Metaverse Guide (250₿)", value=6),
+    app_commands.Choice(name="Data Miner (500₿)", value=7),
+    app_commands.Choice(name="Avatar Stylist (200₿)", value=8),
+    app_commands.Choice(name="Virtual Lawyer (700₿)", value=9),
+    app_commands.Choice(name="Robot Mechanic (800₿)", value=10),
+    app_commands.Choice(name="Digital Healer (300₿)", value=11),
+    app_commands.Choice(name="Energy Harvester (320₿)", value=12),
+    app_commands.Choice(name="VR Pilot (750₿)", value=13),
+    app_commands.Choice(name="Hacker-For-Hire (600₿)", value=14),
+    app_commands.Choice(name="Tech Farmer (300₿)", value=15),
+    app_commands.Choice(name="Memory Broker (800₿)", value=16),
+    app_commands.Choice(name="Virtual Reality Chef (400₿)", value=17)
+
+])
+async def get_job(interaction: discord.Interaction, jobs: app_commands.Choice[int]):
+    global economy_data
+
+    user_name = interaction.user.name
+
+    if user_name not in economy_data:
+        economy_data[user_name] = {
+            "job": None,  # Default job value
+            "balance": 0,  # Default balance
+            "next_claim_date": datetime.today(),  # Default empty inventory
+        }
+
+    if economy_data[user_name]["job"] != jobs.name:
+        economy_data[user_name]["job"] = jobs.name
+        save_economy_data()
+        await interaction.response.send_message(f"Changed your job to {jobs.name}")
+    else:
+        await interaction.response.send_message("You already have that job!", ephemeral=True)
+
+
+
+@client.tree.command(name="claim_job_money")
+async def claim(interaction: discord.Interaction):
+    global economy_data
+    if datetime.strptime(economy_data[interaction.user.name]["next_claim_date"], "%Y-%m-%d").date() == date.today():
+        if economy_data[interaction.user.name]["job"] == "Virtual Architect (1000₿)":
+            economy_data[interaction.user.name]["money"] += 1000
+            date_obj = datetime.strptime(economy_data[interaction.user.name]["next_claim_date"], "%Y-%m-%d").date()
+            new_date = date_obj + timedelta(days=1)
+            economy_data[interaction.user.name]["next_claim_date"] = new_date.strftime("%Y-%m-%d")
+            await interaction.response.send_message(f"Recived ***1000₿*** from payroll, current balance {economy_data[interaction.user.name]["money"]}₿")
+
+        elif economy_data[interaction.user.name]["job"] == "Cybersecurity Specialist (900₿)":
+            economy_data[interaction.user.name]["money"] += 900
+            date_obj = datetime.strptime(economy_data[interaction.user.name]["next_claim_date"], "%Y-%m-%d").date()
+            new_date = date_obj + timedelta(days=1)
+            economy_data[interaction.user.name]["next_claim_date"] = new_date.strftime("%Y-%m-%d")
+            await interaction.response.send_message(f"Recived ***900₿*** from payroll, current balance {economy_data[interaction.user.name]["money"]}₿")
+            
+        elif economy_data[interaction.user.name]["job"] == "AI Trainer (450₿)":
+            economy_data[interaction.user.name]["money"] += 450
+            date_obj = datetime.strptime(economy_data[interaction.user.name]["next_claim_date"], "%Y-%m-%d").date()
+            new_date = date_obj + timedelta(days=1)
+            economy_data[interaction.user.name]["next_claim_date"] = new_date.strftime("%Y-%m-%d")
+            await interaction.response.send_message(f"Recived ***450₿*** from payroll, current balance {economy_data[interaction.user.name]["money"]}₿")
+
+        elif economy_data[interaction.user.name]["job"] == "Digital Curator (600₿)":
+            economy_data[interaction.user.name]["money"] += 600
+            date_obj = datetime.strptime(economy_data[interaction.user.name]["next_claim_date"], "%Y-%m-%d").date()
+            new_date = date_obj + timedelta(days=1)
+            economy_data[interaction.user.name]["next_claim_date"] = new_date.strftime("%Y-%m-%d")
+            await interaction.response.send_message(f"Recived ***600₿*** from payroll, current balance {economy_data[interaction.user.name]["money"]}₿")
+            
+        elif economy_data[interaction.user.name]["job"] == "Quantum Engineer (1400₿)":
+            economy_data[interaction.user.name]["money"] += 1400
+            date_obj = datetime.strptime(economy_data[interaction.user.name]["next_claim_date"], "%Y-%m-%d").date()
+            new_date = date_obj + timedelta(days=1)
+            economy_data[interaction.user.name]["next_claim_date"] = new_date.strftime("%Y-%m-%d")
+            await interaction.response.send_message(f"Recived ***1400₿*** from payroll, current balance {economy_data[interaction.user.name]["money"]}₿")
+
+        elif economy_data[interaction.user.name]["job"] == "Metaverse Guide (250₿)":
+            economy_data[interaction.user.name]["money"] += 250
+            date_obj = datetime.strptime(economy_data[interaction.user.name]["next_claim_date"], "%Y-%m-%d").date()
+            new_date = date_obj + timedelta(days=1)
+            economy_data[interaction.user.name]["next_claim_date"] = new_date.strftime("%Y-%m-%d")
+            await interaction.response.send_message(f"Recived ***250₿*** from payroll, current balance {economy_data[interaction.user.name]["money"]}₿")
+
+        elif economy_data[interaction.user.name]["job"] == "Data Miner (500₿)":
+            economy_data[interaction.user.name]["money"] += 500
+            date_obj = datetime.strptime(economy_data[interaction.user.name]["next_claim_date"], "%Y-%m-%d").date()
+            new_date = date_obj + timedelta(days=1)
+            economy_data[interaction.user.name]["next_claim_date"] = new_date.strftime("%Y-%m-%d")
+            await interaction.response.send_message(f"Recived ***500₿*** from payroll, current balance {economy_data[interaction.user.name]["money"]}₿")
+
+        elif economy_data[interaction.user.name]["job"] == "Avatar Stylist (200₿)":
+            economy_data[interaction.user.name]["money"] += 200
+            date_obj = datetime.strptime(economy_data[interaction.user.name]["next_claim_date"], "%Y-%m-%d").date()
+            new_date = date_obj + timedelta(days=1)
+            economy_data[interaction.user.name]["next_claim_date"] = new_date.strftime("%Y-%m-%d")
+            await interaction.response.send_message(f"Recived ***200₿*** from payroll, current balance {economy_data[interaction.user.name]["money"]}₿")
+
+        elif economy_data[interaction.user.name]["job"] == "Virtual Lawyer (700₿)":
+            economy_data[interaction.user.name]["money"] += 700
+            date_obj = datetime.strptime(economy_data[interaction.user.name]["next_claim_date"], "%Y-%m-%d").date()
+            new_date = date_obj + timedelta(days=1)
+            economy_data[interaction.user.name]["next_claim_date"] = new_date.strftime("%Y-%m-%d")
+            await interaction.response.send_message(f"Recived ***700₿*** from payroll, current balance {economy_data[interaction.user.name]["money"]}₿")
+
+        elif economy_data[interaction.user.name]["job"] == "Robot Mechanic (200₿)":
+            economy_data[interaction.user.name]["money"] += 200
+            date_obj = datetime.strptime(economy_data[interaction.user.name]["next_claim_date"], "%Y-%m-%d").date()
+            new_date = date_obj + timedelta(days=1)
+            economy_data[interaction.user.name]["next_claim_date"] = new_date.strftime("%Y-%m-%d")
+            await interaction.response.send_message(f"Recived ***200₿*** from payroll, current balance {economy_data[interaction.user.name]["money"]}₿")
+
+        elif economy_data[interaction.user.name]["job"] == "Digital Healer (700₿)":
+            economy_data[interaction.user.name]["money"] += 700
+            date_obj = datetime.strptime(economy_data[interaction.user.name]["next_claim_date"], "%Y-%m-%d").date()
+            new_date = date_obj + timedelta(days=1)
+            economy_data[interaction.user.name]["next_claim_date"] = new_date.strftime("%Y-%m-%d")
+            await interaction.response.send_message(f"Recived ***700₿*** from payroll, current balance {economy_data[interaction.user.name]["money"]}₿")
+
+        elif economy_data[interaction.user.name]["job"] == "Energy Harvester (320₿)":
+            economy_data[interaction.user.name]["money"] += 320
+            date_obj = datetime.strptime(economy_data[interaction.user.name]["next_claim_date"], "%Y-%m-%d").date()
+            new_date = date_obj + timedelta(days=1)
+            economy_data[interaction.user.name]["next_claim_date"] = new_date.strftime("%Y-%m-%d")
+            await interaction.response.send_message(f"Recived ***320₿*** from payroll, current balance {economy_data[interaction.user.name]["money"]}₿")
+
+        elif economy_data[interaction.user.name]["job"] == "VR Pilot (750₿)":
+            economy_data[interaction.user.name]["money"] += 750
+            date_obj = datetime.strptime(economy_data[interaction.user.name]["next_claim_date"], "%Y-%m-%d").date()
+            new_date = date_obj + timedelta(days=1)
+            economy_data[interaction.user.name]["next_claim_date"] = new_date.strftime("%Y-%m-%d")
+            await interaction.response.send_message(f"Recived ***750₿*** from payroll, current balance {economy_data[interaction.user.name]["money"]}₿")
+
+        elif economy_data[interaction.user.name]["job"] == "Hacker-For-Hire (600₿)":
+            economy_data[interaction.user.name]["money"] += 600
+            date_obj = datetime.strptime(economy_data[interaction.user.name]["next_claim_date"], "%Y-%m-%d").date()
+            new_date = date_obj + timedelta(days=1)
+            economy_data[interaction.user.name]["next_claim_date"] = new_date.strftime("%Y-%m-%d")
+            await interaction.response.send_message(f"Recived ***600₿*** from payroll, current balance {economy_data[interaction.user.name]["money"]}₿")
+
+        elif economy_data[interaction.user.name]["job"] == "Tech Farmer (300₿)":
+            economy_data[interaction.user.name]["money"] += 300
+            date_obj = datetime.strptime(economy_data[interaction.user.name]["next_claim_date"], "%Y-%m-%d").date()
+            new_date = date_obj + timedelta(days=1)
+            economy_data[interaction.user.name]["next_claim_date"] = new_date.strftime("%Y-%m-%d")
+            await interaction.response.send_message(f"Recived ***300₿*** from payroll, current balance {economy_data[interaction.user.name]["money"]}₿")
+
+        elif economy_data[interaction.user.name]["job"] == "Memory Broker (800₿)":
+            economy_data[interaction.user.name]["money"] += 800
+            date_obj = datetime.strptime(economy_data[interaction.user.name]["next_claim_date"], "%Y-%m-%d").date()
+            new_date = date_obj + timedelta(days=1)
+            economy_data[interaction.user.name]["next_claim_date"] = new_date.strftime("%Y-%m-%d")
+            await interaction.response.send_message(f"Recived ***800₿*** from payroll, current balance {economy_data[interaction.user.name]["money"]}₿")
+
+        elif economy_data[interaction.user.name]["job"] == "Virtual Reality Chef (400₿)":
+            economy_data[interaction.user.name]["money"] += 400
+            date_obj = datetime.strptime(economy_data[interaction.user.name]["next_claim_date"], "%Y-%m-%d").date()
+            new_date = date_obj + timedelta(days=1)
+            economy_data[interaction.user.name]["next_claim_date"] = new_date.strftime("%Y-%m-%d")
+            await interaction.response.send_message(f"Recived ***400₿*** from payroll, current balance {economy_data[interaction.user.name]["money"]}₿")
+        save_economy_data()
+    elif economy_data[interaction.user.name]["job"] == None:
+        await interaction.response.send_message("You dont have any job!", ephemeral=True)
+    else:
+        await interaction.response.send_message("You have aldready claimed your money, come back tomorrow!", ephemeral=True)
+    
+
+
 @client.tree.command(name="gamble")
 async def gamble(interaction:discord.Interaction, ammount:str):
-    """Go Gambling!"""
+    """Go Gambling! (we do warn you, this money gets deducted from your money)"""
+    global economy_data
 
     ammount_parsed = []
 
@@ -641,19 +885,30 @@ async def gamble(interaction:discord.Interaction, ammount:str):
     for character in ammount_parsed:
         final_ammount += character
 
+    final_ammount = int(final_ammount)
+    
+    if final_ammount >= economy_data[interaction.user.name]["money"]:
+        await interaction.response.send_message("You dont have enough money!", ephemeral=True)
+        return
+
     gamble_set = ["1x", "1x", "1x", "No Return", "No Return", "No Return", "No Return", "No Return", "2x", "2x", "5x"]
     gamble_result = gamble_set[random.randint(0, len(gamble_set) - 1)]
 
     if gamble_result == "1x":
-        await interaction.response.send_message(f"You got {final_ammount} back!")
+        await interaction.response.send_message(f"You got ${final_ammount} back!")
     elif gamble_result == "2x":
-        await interaction.response.send_message(f"You Won 2x money! You got {int(final_ammount)*2}!")
+        await interaction.response.send_message(f"You Won 2x money! You got ${final_ammount*2}!")
+        economy_data[interaction.user.name]["money"] += final_ammount*2
     elif gamble_result == "5x":
-        await interaction.response.send_message(f"You Won 5x money! You got {int(final_ammount)*5}!")
+        await interaction.response.send_message(f"You Won 5x money! You got ${final_ammount*5}!")
+        economy_data[interaction.user.name]["money"] += final_ammount*5
     elif gamble_result == "No Return":
         await interaction.response.send_message(f"You lost all your money!")
+        economy_data[interaction.user.name]["money"] -= final_ammount
     else:
         await interaction.response.send_message(f"An error occured on our side, we are sorry.")
+    
+    save_economy_data()
 
 @client.tree.command(name="roll")
 async def roll_dice(interaction: discord.Interaction):
@@ -664,7 +919,7 @@ async def roll_dice(interaction: discord.Interaction):
 @client.tree.command(name="level")
 async def level(interaction: discord.Interaction):
     """Displays your current level and XP"""
-    user_id = str(interaction.user.id)
+    user_id = interaction.user.name
     if user_id not in user_data:
         await interaction.response.send_message("You haven't earned any XP yet!", ephemeral=True)
     else:
@@ -1055,8 +1310,8 @@ DEFAULT_VOLUME = 50  # Default volume level (1-100)
 
 @client.tree.command()
 async def terminate(interaction: discord.Interaction):
-    """Terminates the bot (CAN ONLY BE USED BY THE DEVLOPER)"""
-    if interaction.user.id == 1130883869625815232:
+    """Terminates the bot (CAN ONLY BE USED BY SELECTED PEOPLE)"""
+    if interaction.user.id == 1130883869625815232 or 1195257839267090493:
         try:
             await interaction.response.send_message("Terminating", ephemeral=True)
             await client.close()
@@ -1066,7 +1321,7 @@ async def terminate(interaction: discord.Interaction):
             print("systemexit:", systemexit)
     
     else:
-        await interaction.response.send_message("The Devloper of the bot (overtue.) can only use this command", ephemeral=True)
+        await interaction.response.send_message("Selected people can ony use this can only use this command", ephemeral=True)
 
 @client.tree.command(name="queue")
 async def queue(interaction: discord.Interaction):
