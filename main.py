@@ -717,6 +717,7 @@ async def job_info(interaction: discord.Interaction, jobs: app_commands.Choice[i
 
 ])
 async def get_job(interaction: discord.Interaction, jobs: app_commands.Choice[int]):
+    """Get a job!"""
     global economy_data
 
     user_name = interaction.user.name
@@ -724,8 +725,8 @@ async def get_job(interaction: discord.Interaction, jobs: app_commands.Choice[in
     if user_name not in economy_data:
         economy_data[user_name] = {
             "job": None,  # Default job value
-            "balance": 0,  # Default balance
-            "next_claim_date": datetime.today(),  # Default empty inventory
+            "money": 0,  # Default balance
+            "next_claim_date": datetime.today().isoformat(),  # Default empty inventory
         }
 
     if economy_data[user_name]["job"] != jobs.name:
@@ -739,125 +740,126 @@ async def get_job(interaction: discord.Interaction, jobs: app_commands.Choice[in
 
 @client.tree.command(name="claim_job_money")
 async def claim(interaction: discord.Interaction):
+    """Claim your income"""
     global economy_data
-    if datetime.strptime(economy_data[interaction.user.name]["next_claim_date"], "%Y-%m-%d").date() == date.today():
+    if datetime.strptime(economy_data[interaction.user.name]["next_claim_date"], str("%Y-%m-%d")).date() == date.today():
         if economy_data[interaction.user.name]["job"] == "Virtual Architect (1000₿)":
             economy_data[interaction.user.name]["money"] += 1000
-            date_obj = datetime.strptime(economy_data[interaction.user.name]["next_claim_date"], "%Y-%m-%d").date()
+            date_obj = datetime.strptime(economy_data[interaction.user.name]["next_claim_date"], str("%Y-%m-%d")).date()
             new_date = date_obj + timedelta(days=1)
-            economy_data[interaction.user.name]["next_claim_date"] = new_date.strftime("%Y-%m-%d")
+            economy_data[interaction.user.name]["next_claim_date"] = new_date.strftime(str("%Y-%m-%d"))
             await interaction.response.send_message(f"Recived ***1000₿*** from payroll, current balance {economy_data[interaction.user.name]["money"]}₿")
 
         elif economy_data[interaction.user.name]["job"] == "Cybersecurity Specialist (900₿)":
             economy_data[interaction.user.name]["money"] += 900
-            date_obj = datetime.strptime(economy_data[interaction.user.name]["next_claim_date"], "%Y-%m-%d").date()
+            date_obj = datetime.strptime(economy_data[interaction.user.name]["next_claim_date"], str("%Y-%m-%d")).date()
             new_date = date_obj + timedelta(days=1)
-            economy_data[interaction.user.name]["next_claim_date"] = new_date.strftime("%Y-%m-%d")
+            economy_data[interaction.user.name]["next_claim_date"] = new_date.strftime(str("%Y-%m-%d"))
             await interaction.response.send_message(f"Recived ***900₿*** from payroll, current balance {economy_data[interaction.user.name]["money"]}₿")
             
         elif economy_data[interaction.user.name]["job"] == "AI Trainer (450₿)":
             economy_data[interaction.user.name]["money"] += 450
-            date_obj = datetime.strptime(economy_data[interaction.user.name]["next_claim_date"], "%Y-%m-%d").date()
+            date_obj = datetime.strptime(economy_data[interaction.user.name]["next_claim_date"], str("%Y-%m-%d")).date()
             new_date = date_obj + timedelta(days=1)
-            economy_data[interaction.user.name]["next_claim_date"] = new_date.strftime("%Y-%m-%d")
+            economy_data[interaction.user.name]["next_claim_date"] = new_date.strftime(str("%Y-%m-%d"))
             await interaction.response.send_message(f"Recived ***450₿*** from payroll, current balance {economy_data[interaction.user.name]["money"]}₿")
 
         elif economy_data[interaction.user.name]["job"] == "Digital Curator (600₿)":
             economy_data[interaction.user.name]["money"] += 600
-            date_obj = datetime.strptime(economy_data[interaction.user.name]["next_claim_date"], "%Y-%m-%d").date()
+            date_obj = datetime.strptime(economy_data[interaction.user.name]["next_claim_date"], str("%Y-%m-%d")).date()
             new_date = date_obj + timedelta(days=1)
-            economy_data[interaction.user.name]["next_claim_date"] = new_date.strftime("%Y-%m-%d")
+            economy_data[interaction.user.name]["next_claim_date"] = new_date.strftime(str("%Y-%m-%d"))
             await interaction.response.send_message(f"Recived ***600₿*** from payroll, current balance {economy_data[interaction.user.name]["money"]}₿")
             
         elif economy_data[interaction.user.name]["job"] == "Quantum Engineer (1400₿)":
             economy_data[interaction.user.name]["money"] += 1400
-            date_obj = datetime.strptime(economy_data[interaction.user.name]["next_claim_date"], "%Y-%m-%d").date()
+            date_obj = datetime.strptime(economy_data[interaction.user.name]["next_claim_date"], str("%Y-%m-%d")).date()
             new_date = date_obj + timedelta(days=1)
-            economy_data[interaction.user.name]["next_claim_date"] = new_date.strftime("%Y-%m-%d")
+            economy_data[interaction.user.name]["next_claim_date"] = new_date.strftime(str("%Y-%m-%d"))
             await interaction.response.send_message(f"Recived ***1400₿*** from payroll, current balance {economy_data[interaction.user.name]["money"]}₿")
 
         elif economy_data[interaction.user.name]["job"] == "Metaverse Guide (250₿)":
             economy_data[interaction.user.name]["money"] += 250
-            date_obj = datetime.strptime(economy_data[interaction.user.name]["next_claim_date"], "%Y-%m-%d").date()
+            date_obj = datetime.strptime(economy_data[interaction.user.name]["next_claim_date"], str("%Y-%m-%d")).date()
             new_date = date_obj + timedelta(days=1)
-            economy_data[interaction.user.name]["next_claim_date"] = new_date.strftime("%Y-%m-%d")
+            economy_data[interaction.user.name]["next_claim_date"] = new_date.strftime(str("%Y-%m-%d"))
             await interaction.response.send_message(f"Recived ***250₿*** from payroll, current balance {economy_data[interaction.user.name]["money"]}₿")
 
         elif economy_data[interaction.user.name]["job"] == "Data Miner (500₿)":
             economy_data[interaction.user.name]["money"] += 500
-            date_obj = datetime.strptime(economy_data[interaction.user.name]["next_claim_date"], "%Y-%m-%d").date()
+            date_obj = datetime.strptime(economy_data[interaction.user.name]["next_claim_date"], str("%Y-%m-%d")).date()
             new_date = date_obj + timedelta(days=1)
-            economy_data[interaction.user.name]["next_claim_date"] = new_date.strftime("%Y-%m-%d")
+            economy_data[interaction.user.name]["next_claim_date"] = new_date.strftime(str("%Y-%m-%d"))
             await interaction.response.send_message(f"Recived ***500₿*** from payroll, current balance {economy_data[interaction.user.name]["money"]}₿")
 
         elif economy_data[interaction.user.name]["job"] == "Avatar Stylist (200₿)":
             economy_data[interaction.user.name]["money"] += 200
-            date_obj = datetime.strptime(economy_data[interaction.user.name]["next_claim_date"], "%Y-%m-%d").date()
+            date_obj = datetime.strptime(economy_data[interaction.user.name]["next_claim_date"], str("%Y-%m-%d")).date()
             new_date = date_obj + timedelta(days=1)
-            economy_data[interaction.user.name]["next_claim_date"] = new_date.strftime("%Y-%m-%d")
+            economy_data[interaction.user.name]["next_claim_date"] = new_date.strftime(str("%Y-%m-%d"))
             await interaction.response.send_message(f"Recived ***200₿*** from payroll, current balance {economy_data[interaction.user.name]["money"]}₿")
 
         elif economy_data[interaction.user.name]["job"] == "Virtual Lawyer (700₿)":
             economy_data[interaction.user.name]["money"] += 700
-            date_obj = datetime.strptime(economy_data[interaction.user.name]["next_claim_date"], "%Y-%m-%d").date()
+            date_obj = datetime.strptime(economy_data[interaction.user.name]["next_claim_date"], str("%Y-%m-%d")).date()
             new_date = date_obj + timedelta(days=1)
-            economy_data[interaction.user.name]["next_claim_date"] = new_date.strftime("%Y-%m-%d")
+            economy_data[interaction.user.name]["next_claim_date"] = new_date.strftime(str("%Y-%m-%d"))
             await interaction.response.send_message(f"Recived ***700₿*** from payroll, current balance {economy_data[interaction.user.name]["money"]}₿")
 
         elif economy_data[interaction.user.name]["job"] == "Robot Mechanic (200₿)":
             economy_data[interaction.user.name]["money"] += 200
-            date_obj = datetime.strptime(economy_data[interaction.user.name]["next_claim_date"], "%Y-%m-%d").date()
+            date_obj = datetime.strptime(economy_data[interaction.user.name]["next_claim_date"], str("%Y-%m-%d")).date()
             new_date = date_obj + timedelta(days=1)
-            economy_data[interaction.user.name]["next_claim_date"] = new_date.strftime("%Y-%m-%d")
+            economy_data[interaction.user.name]["next_claim_date"] = new_date.strftime(str("%Y-%m-%d"))
             await interaction.response.send_message(f"Recived ***200₿*** from payroll, current balance {economy_data[interaction.user.name]["money"]}₿")
 
         elif economy_data[interaction.user.name]["job"] == "Digital Healer (700₿)":
             economy_data[interaction.user.name]["money"] += 700
-            date_obj = datetime.strptime(economy_data[interaction.user.name]["next_claim_date"], "%Y-%m-%d").date()
+            date_obj = datetime.strptime(economy_data[interaction.user.name]["next_claim_date"], str("%Y-%m-%d")).date()
             new_date = date_obj + timedelta(days=1)
-            economy_data[interaction.user.name]["next_claim_date"] = new_date.strftime("%Y-%m-%d")
+            economy_data[interaction.user.name]["next_claim_date"] = new_date.strftime(str("%Y-%m-%d"))
             await interaction.response.send_message(f"Recived ***700₿*** from payroll, current balance {economy_data[interaction.user.name]["money"]}₿")
 
         elif economy_data[interaction.user.name]["job"] == "Energy Harvester (320₿)":
             economy_data[interaction.user.name]["money"] += 320
-            date_obj = datetime.strptime(economy_data[interaction.user.name]["next_claim_date"], "%Y-%m-%d").date()
+            date_obj = datetime.strptime(economy_data[interaction.user.name]["next_claim_date"], str("%Y-%m-%d")).date()
             new_date = date_obj + timedelta(days=1)
-            economy_data[interaction.user.name]["next_claim_date"] = new_date.strftime("%Y-%m-%d")
+            economy_data[interaction.user.name]["next_claim_date"] = new_date.strftime(str("%Y-%m-%d"))
             await interaction.response.send_message(f"Recived ***320₿*** from payroll, current balance {economy_data[interaction.user.name]["money"]}₿")
 
         elif economy_data[interaction.user.name]["job"] == "VR Pilot (750₿)":
             economy_data[interaction.user.name]["money"] += 750
-            date_obj = datetime.strptime(economy_data[interaction.user.name]["next_claim_date"], "%Y-%m-%d").date()
+            date_obj = datetime.strptime(economy_data[interaction.user.name]["next_claim_date"], str("%Y-%m-%d")).date()
             new_date = date_obj + timedelta(days=1)
-            economy_data[interaction.user.name]["next_claim_date"] = new_date.strftime("%Y-%m-%d")
+            economy_data[interaction.user.name]["next_claim_date"] = new_date.strftime(str("%Y-%m-%d"))
             await interaction.response.send_message(f"Recived ***750₿*** from payroll, current balance {economy_data[interaction.user.name]["money"]}₿")
 
         elif economy_data[interaction.user.name]["job"] == "Hacker-For-Hire (600₿)":
             economy_data[interaction.user.name]["money"] += 600
-            date_obj = datetime.strptime(economy_data[interaction.user.name]["next_claim_date"], "%Y-%m-%d").date()
+            date_obj = datetime.strptime(economy_data[interaction.user.name]["next_claim_date"], str("%Y-%m-%d")).date()
             new_date = date_obj + timedelta(days=1)
-            economy_data[interaction.user.name]["next_claim_date"] = new_date.strftime("%Y-%m-%d")
+            economy_data[interaction.user.name]["next_claim_date"] = new_date.strftime(str("%Y-%m-%d"))
             await interaction.response.send_message(f"Recived ***600₿*** from payroll, current balance {economy_data[interaction.user.name]["money"]}₿")
 
         elif economy_data[interaction.user.name]["job"] == "Tech Farmer (300₿)":
             economy_data[interaction.user.name]["money"] += 300
-            date_obj = datetime.strptime(economy_data[interaction.user.name]["next_claim_date"], "%Y-%m-%d").date()
+            date_obj = datetime.strptime(economy_data[interaction.user.name]["next_claim_date"], str("%Y-%m-%d")).date()
             new_date = date_obj + timedelta(days=1)
-            economy_data[interaction.user.name]["next_claim_date"] = new_date.strftime("%Y-%m-%d")
+            economy_data[interaction.user.name]["next_claim_date"] = new_date.strftime(str("%Y-%m-%d"))
             await interaction.response.send_message(f"Recived ***300₿*** from payroll, current balance {economy_data[interaction.user.name]["money"]}₿")
 
         elif economy_data[interaction.user.name]["job"] == "Memory Broker (800₿)":
             economy_data[interaction.user.name]["money"] += 800
-            date_obj = datetime.strptime(economy_data[interaction.user.name]["next_claim_date"], "%Y-%m-%d").date()
+            date_obj = datetime.strptime(economy_data[interaction.user.name]["next_claim_date"], str("%Y-%m-%d")).date()
             new_date = date_obj + timedelta(days=1)
-            economy_data[interaction.user.name]["next_claim_date"] = new_date.strftime("%Y-%m-%d")
+            economy_data[interaction.user.name]["next_claim_date"] = new_date.strftime(str("%Y-%m-%d"))
             await interaction.response.send_message(f"Recived ***800₿*** from payroll, current balance {economy_data[interaction.user.name]["money"]}₿")
 
         elif economy_data[interaction.user.name]["job"] == "Virtual Reality Chef (400₿)":
             economy_data[interaction.user.name]["money"] += 400
-            date_obj = datetime.strptime(economy_data[interaction.user.name]["next_claim_date"], "%Y-%m-%d").date()
+            date_obj = datetime.strptime(economy_data[interaction.user.name]["next_claim_date"], str("%Y-%m-%d")).date()
             new_date = date_obj + timedelta(days=1)
-            economy_data[interaction.user.name]["next_claim_date"] = new_date.strftime("%Y-%m-%d")
+            economy_data[interaction.user.name]["next_claim_date"] = new_date.strftime(str("%Y-%m-%d"))
             await interaction.response.send_message(f"Recived ***400₿*** from payroll, current balance {economy_data[interaction.user.name]["money"]}₿")
         save_economy_data()
     elif economy_data[interaction.user.name]["job"] == None:
@@ -868,6 +870,7 @@ async def claim(interaction: discord.Interaction):
 
 
 @client.tree.command(name="gamble")
+@app_commands.describe(ammount="The ammount you want to gamble with")
 async def gamble(interaction:discord.Interaction, ammount:str):
     """Go Gambling! (we do warn you, this money gets deducted from your money)"""
     global economy_data
@@ -929,21 +932,35 @@ async def level(interaction: discord.Interaction):
 
 @client.tree.command(name="leaderboard")
 async def leaderboard(interaction: discord.Interaction):
-    """Displays the top 5 users with the most XP"""
-    
-    # Sort users by text XP
-    sorted_text_users = sorted(user_data.items(), key=lambda x: x[1]['xp'], reverse=True)
-    
-    # Sort users by voice XP
-    sorted_voice_users = sorted(voice_xp_data.items(), key=lambda x: x[1], reverse=True)
-    
-    # Create the embed for the leaderboard
+    """Displays the top 5 users with the most XP and money"""
+
+    # Helper function to safely get integer values
+    def safe_int(value):
+        try:
+            return int(value)
+        except (ValueError, TypeError):
+            return 0
+
+    # Sort users by XP using usernames
+    sorted_text_users = sorted(
+        [(username, data) for username, data in user_data.items() if 'xp' in data],
+        key=lambda x: safe_int(x[1]['xp']),
+        reverse=True
+    )
+
+    # Sort users by money using usernames
+    sorted_money_users = sorted(
+        [(username, data) for username, data in economy_data.items() if 'money' in data],
+        key=lambda x: safe_int(x[1]["money"]),
+        reverse=True
+    )
+
     leaderboard = discord.Embed(
-        title="🏆 **Guild Score Leaderboard** 🏆", 
+        title="🏆 **Guild Score Leaderboard** 🏆",
         colour=discord.Colour.gold()
     )
-    
-    # Format the top 5 users' text XP
+
+    # Generate the text leaderboard
     text_leaderboard = ""
     for i, (user_id, data) in enumerate(sorted_text_users[:5], 1):
         user = await client.fetch_user(int(user_id))
@@ -952,19 +969,22 @@ async def leaderboard(interaction: discord.Interaction):
     # Add text leaderboard as one field
     leaderboard.add_field(name="**Top 4 Text** 💬", value=text_leaderboard or "No Data", inline=True)
 
-    # Format the top 5 users' voice XP
-    voice_leaderboard = ""
-    for i, (user_id, xp) in enumerate(sorted_voice_users[:5], 1):
-        user = await client.fetch_user(int(user_id))
-        voice_leaderboard += f"**#{i} {user.mention}**: `{xp}` XP\n"
+    # Generate the money leaderboard
+    text_leaderboard = ""
+    for i, (username, data) in enumerate(sorted_money_users[:5], 1):
+        text_leaderboard += f"**#{i} {username}**: `{safe_int(data['money'])}` ₿\n"
 
-    # Add voice leaderboard as one field
-    leaderboard.add_field(name="**Top 4 Voice** 🎤", value=voice_leaderboard or "No Data", inline=True)
+
+    leaderboard.add_field(name="**Top 4 Money** 💵", value=text_leaderboard or "No Data", inline=True)
 
     leaderboard.set_footer(text=f"Requested by {interaction.user.name}", icon_url=interaction.user.avatar.url)
 
     await interaction.response.send_message(embed=leaderboard)
 
+@client.tree.command()
+async def show_balance(interaction: discord.Interaction):
+    global economy_data
+    await interaction.response.send_message(f"You have {economy_data[interaction.user.name]["money"]}₿")
 
 @client.tree.command(name="voicexp")
 async def voicexp(interaction: discord.Interaction, member: discord.Member = None):
